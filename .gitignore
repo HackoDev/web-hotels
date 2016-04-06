@@ -6,3 +6,6 @@ env/
 # Translations
 *.mo
 *.pot
+
+
+*.pyc
