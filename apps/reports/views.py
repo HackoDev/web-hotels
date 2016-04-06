@@ -3,5 +3,5 @@ from tornado.web import RequestHandler
 
 class IndexHandler(RequestHandler):
 
-	def get(self):
-		self.write("Reports index view")
+    def get(self):
+        self.write("Reports index view")

@@ -1,6 +1,6 @@
 .idea
 # Distribution / packaging
-env/
+venv/
 
 
 # Translations

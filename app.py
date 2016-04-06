@@ -8,7 +8,8 @@ from apps.main.urls import url_patterns as main_urls
 from apps.users.urls import url_patterns as user_urls
 from apps.hotels.urls import url_patterns as hotels_urls
 from apps.reports.urls import url_patterns as reports_urls
-
+from apps.admin.urls import url_patterns as admin_urls
+from settings import settings
 
 define("port", default=8000, help="run on the given port", type=int)
 
@@ -23,9 +24,10 @@ if __name__ == "__main__":
     handlers.extend(user_urls)
     handlers.extend(hotels_urls)
     handlers.extend(reports_urls)
+    handlers.extend(admin_urls)
 
     # create tornado web app
-    app = web.Application(handlers=handlers)
+    app = web.Application(handlers=handlers, **settings)
     http_server = httpserver.HTTPServer(app)
     http_server.listen(options.port)
     ioloop.IOLoop.instance().start()
