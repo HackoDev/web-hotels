@@ -9,3 +9,4 @@ env/
 
 
 *.pyc
+db.sqlite
