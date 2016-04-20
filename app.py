@@ -10,6 +10,8 @@ from apps.hotels.urls import url_patterns as hotels_urls
 from apps.reports.urls import url_patterns as reports_urls
 from apps.admin.urls import url_patterns as admin_urls
 from settings import settings
+import ui_methods
+
 
 define("port", default=8000, help="run on the given port", type=int)
 
@@ -27,7 +29,7 @@ if __name__ == "__main__":
     handlers.extend(admin_urls)
 
     # create tornado web app
-    app = web.Application(handlers=handlers, **settings)
+    app = web.Application(handlers=handlers, ui_methods=ui_methods, autoreload=True, **settings)
     http_server = httpserver.HTTPServer(app)
     http_server.listen(options.port)
     ioloop.IOLoop.instance().start()

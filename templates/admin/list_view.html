@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h4>Администрирование: {{ opts['meta'].verbose_name_plural }}
+    <a href="{{ reverse_url('admin-countries-add') }}" class="pull-right btn btn-default" style="margin-right:20px;">
+      Добавить
+    </a>
+  </h4>
+
+  <hr/>
+
+  {% if len(objects) > 0 %}
+    <table>
+      {% if has_display_fields %}
+        <tr>
+          {% for field_name in display_fields %}
+            <th> {{ get_asd_asd(opts["model"], field_name) }} </th>
+          {% end %}
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="{{ len(display_fields) }}">Список полей пуст</td>
+        </tr>
+      {% end %}
+      {% for item in objects %}
+        <tr>
+          {% for field_name in display_fields %}
+            <td> {{ display_value(item, field_name) }}</td>
+          {% end %}
+        </tr>
+      {% end %}
+    </table>
+  {% else %}
+    <div class="alert alert-info">Список пуст</div>
+  {% end %}
+{% end %}

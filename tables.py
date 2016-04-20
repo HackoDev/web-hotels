@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relation, sessionmaker
 from sqlalchemy import *
 
 
+engine = create_engine('sqlite:///db.sqlite')
 BaseModel = declarative_base()
+BaseModel.metadata.bind = engine
 
 
 # authenticate tables
@@ -36,16 +39,24 @@ class UserPoile(BaseModel):
     def __unicode__(self):
         return u"%s %s" % (self.first_name, self.middle_name)
 
+    class Meta:
+        verbose_name = u"Пользователь"
+        verbose_name_plural = u"Пользователь"
+
 
 class Country(BaseModel):
 
     __tablename__ = "countries"
 
-    id = Column(Integer, primary_key=True)
-    title = Column(String(255), nullable=False, default="")
+    id = Column(Integer, primary_key=True, info={"verbose_name": "Id"})
+    title = Column(String(255), nullable=False, default="", info={"verbose_name": u"Название"})
 
     def __unicode__(self):
         return self.title
+
+    class Meta:
+        verbose_name = u"Страна"
+        verbose_name_plural = u"Страны"
 
 
 class City(BaseModel):
@@ -56,6 +67,10 @@ class City(BaseModel):
     country_id = Column(Integer, ForeignKey(Country.id), nullable=False)
     title = Column(String(255), nullable=False, default="")
 
+    class Meta:
+        verbose_name = u"Город"
+        verbose_name_plural = u"Города"
+
 
 class Hotel(BaseModel):
 
@@ -64,6 +79,10 @@ class Hotel(BaseModel):
     id = Column(Integer, primary_key=True)
     title = Column(String(512), default="", nullable=False)
     position = Column(Integer, default=3, nullable=False)
+
+    class Meta:
+        verbose_name = u"Отель"
+        verbose_name_plural = u"Отели"
 
 
 class Room(BaseModel):
@@ -74,13 +93,17 @@ class Room(BaseModel):
     hotel_id = Column(Integer, ForeignKey(Hotel.id), nullable=False)
 
     def __get_price(self):
-        pass
+        session.query(Price.room_id==self.id).order_by(Price.id.desc()).first()
 
     def __set_price(self, value):
         assert isinstance(value, int) or isinstance(value, float), "Incorrect number value"
         RoomPrice(value=value, room=self.id)
 
     property(__get_price, __set_price)
+
+    class Meta:
+        verbose_name = u"Номер"
+        verbose_name_plural = u"Номера"
 
 
 class RoomPrice(BaseModel):
@@ -91,6 +114,12 @@ class RoomPrice(BaseModel):
     room_id = Column(Integer, ForeignKey(Room.id), nullable=False)
     value = Column(Float, default=0, nullable=False)
 
+    class Meta:
+        verbose_name = u"Цена номера"
+        verbose_name_plural = u"Цены номеров"
 
-engine = create_engine('sqlite:///db.sqlite')
+
 BaseModel.metadata.create_all(engine)
+
+DBSession = sessionmaker(bind=engine)
+session = DBSession()

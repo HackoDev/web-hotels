@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h4>Добавление: {{ opts["meta"].verbose_name }}</h4>
+
+  <hr/>
+
+  <form class="form-horizontal" method="post">
+
+      <div class="form-group">
+        <div class="col-md-2">
+          <label for="title">Название</label>
+        </div>
+        <div class="col-md-8">
+          {% raw form.title(class_="form-control input-sm") %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-md-10">
+          <input type="submit" class="btn btn-success pull-right" value="Сохранить"/>
+        </div>
+      </div>
+
+  </form>
+
+{% end %}

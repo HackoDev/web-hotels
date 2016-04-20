@@ -1,11 +1,7 @@
 from sqlalchemy.orm import sessionmaker
 from tornado.web import RequestHandler
 
-from tables import BaseModel, UserPoile, engine
-
-BaseModel.metadata.bind = engine
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
+from tables import BaseModel, UserPoile, Country, session
 
 
 class IndexHandler(RequestHandler):
