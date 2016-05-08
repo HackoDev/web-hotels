@@ -3,7 +3,9 @@ import os
 
 BASE_DIR = os.path.dirname(__file__)
 
-root = lambda x: os.path.join(BASE_DIR, x)
+root = lambda *x: os.path.join(BASE_DIR, *x)
+
+DB_PATH = root("db.sqlite")
 
 settings = dict(
     template_path=root("templates"),

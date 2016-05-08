@@ -2,17 +2,19 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relation, sessionmaker
 from sqlalchemy import *
+import settings
 
-
-engine = create_engine('sqlite:///db.sqlite')
+engine = create_engine('sqlite:///' + settings.DB_PATH)
 BaseModel = declarative_base()
 BaseModel.metadata.bind = engine
 
 
 # authenticate tables
 
+POSITION_CHOICES = [(str(i), unicode(i)) for i in range(1, 6)]
 
-class UserPofile(BaseModel):
+
+class UserProfile(BaseModel):
     """
     User models for authenticate and storing information
     """
@@ -51,8 +53,14 @@ class Country(BaseModel):
     id = Column(Integer, primary_key=True, info={"verbose_name": "Id"})
     title = Column(String(255), nullable=False, default="", info={"verbose_name": u"Название"})
 
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            title=self.title,
+        )
+
     def __unicode__(self):
-        return self.title
+        return self.title.strip()
 
     class Meta:
         verbose_name = u"Страна"
@@ -67,6 +75,21 @@ class City(BaseModel):
     country_id = Column(Integer, ForeignKey(Country.id), nullable=False)
     title = Column(String(255), nullable=False, default="")
 
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            country_id=self.country_id,
+            title=self.title,
+        )
+
+    def country(self):
+        return session.query(Country).filter(Country.id == self.country_id).one()
+
+    country.info = u"Country"
+
+    def __unicode__(self):
+        return self.title
+
     class Meta:
         verbose_name = u"Город"
         verbose_name_plural = u"Города"
@@ -77,8 +100,24 @@ class Hotel(BaseModel):
     __tablename__ = "hotels"
 
     id = Column(Integer, primary_key=True)
+    city_id = Column(Integer, ForeignKey(City.id), nullable=False)
     title = Column(String(512), default="", nullable=False)
     position = Column(Integer, default=3, nullable=False)
+
+    def city(self):
+        return session.query(City).filter(City.id == self.city_id).one()
+
+    city.info = {"verbose_name": u"City"}
+
+    def __unicode__(self):
+        return self.title
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            title=self.title,
+            position=self.position,
+        )
 
     class Meta:
         verbose_name = u"Отель"
@@ -90,10 +129,26 @@ class Room(BaseModel):
     __tablename__ = "rooms"
 
     id = Column(Integer, primary_key=True)
+    title = Column(String(512), default="", nullable=False)
     hotel_id = Column(Integer, ForeignKey(Hotel.id), nullable=False)
 
+    def __unicode__(self):
+        return self.title
+
+    def hotel(self):
+        return session.query(Hotel).filter(Hotel.id == self.hotel_id).one()
+
+    hotel.info = u"hotel"
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            title=self.title,
+            hotel_id=self.hotel_id
+        )
+
     def __get_price(self):
-        session.query(Price.room_id==self.id).order_by(Price.id.desc()).first()
+        session.query(RoomPrice).filter(RoomPrice.room_id == self.id).order_by(RoomPrice.id.desc()).first()
 
     def __set_price(self, value):
         assert isinstance(value, int) or isinstance(value, float), "Incorrect number value"
@@ -113,6 +168,13 @@ class RoomPrice(BaseModel):
     id = Column(Integer, primary_key=True)
     room_id = Column(Integer, ForeignKey(Room.id), nullable=False)
     value = Column(Float, default=0, nullable=False)
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            room_id=self.room_id,
+            value=self.value
+        )
 
     class Meta:
         verbose_name = u"Цена номера"

@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h4>Администрирование: {{ opts['meta'].verbose_name_plural }}
-    <a href="{{ reverse_url('admin-countries-add') }}" class="pull-right btn btn-default" style="margin-right:20px;">
+  <h2>{{ opts['meta'].verbose_name_plural }}
+    <a href='{{ reverse_url("admin:" + tab_active + "-add") }}' class="pull-right btn btn-default" style="margin-right:20px;">
       Добавить
     </a>
-  </h4>
+  </h2>
 
   <hr/>
 
@@ -25,7 +25,7 @@
       {% for item in ctx["objects_list"] %}
         <tr>
           {% for field_name in display_fields %}
-            <td> {{ display_value(item, field_name) }}</td>
+            <td><a href='{{ reverse_url("admin:" + tab_active + "-change", item.id) }}'>{{ display_value(item, field_name) }}</a></td>
           {% end %}
         </tr>
       {% end %}
@@ -37,11 +37,11 @@
 
   <ul class="pager">
     {% if ctx["prev_page"] %}
-      <li><a href='{{ reverse_url("admin-countries-list") }}?page={{ ctx["prev_page"] }}'>Предыдущая</a></li>
+      <li><a href='{{ reverse_url("admin:" + tab_active + "-list") }}?page={{ ctx["prev_page"] }}'>Предыдущая</a></li>
     {% end %}
     <li>Страница: {{ ctx["page"] }} из {{ ctx["max_page"] }}</li>
     {% if ctx["next_page"] %}
-      <li><a href='{{ reverse_url("admin-countries-list") }}?page={{ ctx["next_page"] }}'>Следующая</a></li>
+      <li><a href='{{ reverse_url("admin:" + tab_active + "-list") }}?page={{ ctx["next_page"] }}'>Следующая</a></li>
     {% end %}
   </ul>
 

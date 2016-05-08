@@ -1,24 +1,42 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h4>Добавление: {{ opts["meta"].verbose_name }}</h4>
-
+{% if instance.id %}
+    <h4>Редактирование: "{{ unicode(instance) or "-" }}"</h4>
+{% else %}
+    <h4>Добавление: {{ opts["meta"].verbose_name }}</h4>
+{% end %}
   <hr/>
 
   <form class="form-horizontal" method="post">
-
-      <div class="form-group">
-        <div class="col-md-2">
-          <label for="title">Название</label>
-        </div>
-        <div class="col-md-8">
-          {% raw form.title(class_="form-control input-sm") %}
-        </div>
-      </div>
+      <input type="hidden" name="to" value="{{ to }}"/>
+      {% for field in form %}
+          <div class="form-group">
+            <div class="col-md-2">
+                {% raw field.label %}
+            </div>
+            <div class="col-md-8">
+              {% raw field(class_="form-control input-sm") %}
+              {% if field.errors %}
+                <div class="alert alert-danger">
+                    <ul >
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% end %}
+                    </ul>
+                </div>
+              {% end %}
+            </div>
+          </div>
+      {% end %}
 
       <div class="form-group">
         <div class="col-md-10">
+          <hr/>
           <input type="submit" class="btn btn-success pull-right" value="Сохранить"/>
+          {% if instance.id %}
+            <a class="btn btn-danger pull-left" href="{{ reverse_url("admin:" + tab_active + "-delete", instance.id) }}">Удалить</a>
+          {% end %}
         </div>
       </div>
 

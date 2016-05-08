@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h4>Удаление объекта</h4>
+  <hr/>
+
+  <form class="form-horizontal" method="post">
+
+      <div class="form-group">
+        <div class="col-md-10">
+          <p>Вы действительно хоитите удалить
+            "<a href="{{ reverse_url("admin:" + tab_active + "-change", instance.id) }}">{{ unicode(instance) or "-" }}</a>"
+            ?</p>
+            <br/>
+            <input type="submit" class="btn btn-danger" value="Да"/>&nbsp;&nbsp;&nbsp;<a href="{{ to }}" class="btn btn-success">Нет</a>
+        </div>
+      </div>
+
+  </form>
+
+{% end %}
