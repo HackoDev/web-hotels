@@ -7,5 +7,5 @@ def get_asd_asd(data, model, field_name):
 
 def display_value(data, obj, field_name):
 	if hasattr(obj, field_name):
-		return getattr(model, field_name)
+		return getattr(obj, field_name)
 	raise ValueError("Has not attribute")

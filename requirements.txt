@@ -1,3 +1,5 @@
 tornado==4.3
 sqlalchemy
 sqlalchemy-migrate
+wtforms
+wtforms-tornado

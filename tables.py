@@ -12,7 +12,7 @@ BaseModel.metadata.bind = engine
 # authenticate tables
 
 
-class UserPoile(BaseModel):
+class UserPofile(BaseModel):
     """
     User models for authenticate and storing information
     """
