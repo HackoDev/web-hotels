@@ -1,25 +1,24 @@
-from apps.admin.forms import CountryAdminForm, CityAdminForm, HotelAdminForm, RoomAdminForm
+# -*- coding: utf-8 -*-
+from apps.admin.forms import CountryAdminForm, CityAdminForm, HotelAdminForm, RoomAdminForm, RoomPriceAdminForm
 from sqlalchemy.orm import sessionmaker
 from tornado.web import RequestHandler
 
-from tables import BaseModel, UserProfile, Country, session, City, Hotel, Room
+from tables import BaseModel, UserProfile, Country, session, City, Hotel, Room, RoomPrice
 
 
 class Paginator(object):
 
     def __init__(self, query_set, page_size, current_page, order_by=None):
-        if isinstance(current_page, basestring):
+        if isinstance(current_page, str):
             if current_page.isdigit():
                 current_page = int(current_page)
         if order_by is not None:
             self.order_by = order_by
-        else:
-            self.order_by = Country.id.desc()
         self.prev_page = None
         self.next_page = None
         self.page = current_page
         self.page_size = page_size
-        self.query_set = query_set.order_by(self.order_by)
+        self.query_set = query_set.order_by(*self.order_by)
         self.count = query_set.count()
         self.max_page = self.count / self.page_size
         if self.max_page > 0:
@@ -51,6 +50,7 @@ class BaseAdminListView(RequestHandler):
     page_size = 10
     PAGE_ARGUMENT_NAME = "page"
     tab_active = None
+    order_fields = ['-id']
 
     @property
     def admin_add_url(self):
@@ -62,7 +62,10 @@ class BaseAdminListView(RequestHandler):
 
     @property
     def order_by(self):
-        return self.model_class.id.desc()
+        return map(
+            lambda x: getattr(self.model_class, x[1:]).desc() if x.startswith('-') else getattr(self.model_class, x),
+            self.order_fields
+        )
 
     def data_received(self, chunk):
         raise ValueError('error implementation')
@@ -148,7 +151,7 @@ class BaseAdminAddChangeView(RequestHandler):
             session.commit()
             self.redirect(self.get_success_url())
         else:
-            print "invalid form"
+            print("invalid form")
         self.get(form=form, pk=pk)
 
     def get_form_kwargs(self):
@@ -218,12 +221,22 @@ class BaseAdminDeleteView(RequestHandler):
 # define admin classes
 
 
+class IndexView(RequestHandler):
+    def get(self):
+        ctx = dict(
+            title="Администрирование",
+            tab_active=None
+        )
+        self.render("admin/index.html", **ctx)
+
+
 class CountryAdminListView(BaseAdminListView):
     """ Admin country list view """
 
     model_class = Country
-    display_fields = ['id', 'title']
+    display_fields = ['id', 'title']    
     tab_active = 'country'
+    order_fields = ['title']
 
 
 class CityAdminListView(BaseAdminListView):
@@ -232,6 +245,7 @@ class CityAdminListView(BaseAdminListView):
     model_class = City
     display_fields = ['id', 'title', 'country']
     tab_active = 'city'
+    order_fields = ['title']
 
 
 class HotelAdminListView(BaseAdminListView):
@@ -240,14 +254,24 @@ class HotelAdminListView(BaseAdminListView):
     model_class = Hotel
     display_fields = ['id', 'title', 'position', 'city']
     tab_active = 'hotel'
+    order_fields = ['title']
 
 
 class RoomAdminListView(BaseAdminListView):
     """ Admin hotel list view """
 
     model_class = Room
-    display_fields = ['id', 'title', 'hotel']
+    display_fields = ['id', 'title', 'hotel', 'price']
     tab_active = 'room'
+
+
+
+class RoomPriceAdminListView(BaseAdminListView):
+    """ Admin hotel list view """
+
+    model_class = RoomPrice
+    display_fields = ['id', 'value', 'room']
+    tab_active = 'room-price'
 
 
 class CountryAddChangeView(BaseAdminAddChangeView):
@@ -286,6 +310,15 @@ class RoomAddChangeView(BaseAdminAddChangeView):
     tab_active = 'room'
 
 
+class RoomPriceAddChangeView(BaseAdminAddChangeView):
+    """ Admin room price add and change view """
+
+    model_class = RoomPrice
+    form_class = RoomPriceAdminForm
+    success_url = "admin:room-price-list"
+    tab_active = 'room-price'
+
+
 class CityDeleteView(BaseAdminDeleteView):
     """ Admin city delete view """
 
@@ -317,6 +350,13 @@ class HotelDeleteView(BaseAdminDeleteView):
     success_url = 'admin:hotel-list'
     tab_active = 'hotel'
 
+class RoomPriceDeleteView(BaseAdminDeleteView):
+    """ Admin room price delete view """
+
+    model_class = RoomPrice
+    success_url = 'admin:room-price-list'
+    tab_active = 'room-price'
+
 
 # class CountryChangeView(BaseAdminChangeView):
 
@@ -325,12 +365,12 @@ class HotelDeleteView(BaseAdminDeleteView):
     # def get(self):
     #     print(session.query(UserPofile).all())
     #     if self.get_argument('create_user', False):
-    #         user = UserPofile(first_name=u"Evgeniy", second_name=u"Hacko", middle_name=u"Gennadievich", email="hacko@nicecode.biz")
+    #         user = UserPofile(first_name="Evgeniy", second_name="Hacko", middle_name="Gennadievich", email="hacko@nicecode.biz")
     #         user.set_password('password')
     #         session.add(user)
     #         try:
     #             session.commit()
     #         except Exception, e:
-    #             self.write(u"Exception: %s" % e.message)
+    #             self.write("Exception: %s" % e.message)
     #             session.rollback()
     #     self.write("Hotels index view")

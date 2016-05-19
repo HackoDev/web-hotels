@@ -1,5 +1,5 @@
-from .views import IndexHandler
+from .views import HotelListViewView
 
 url_patterns = [
-    (r'/hotels/', IndexHandler)
+    (r'/hotels/', HotelListViewView)
 ]

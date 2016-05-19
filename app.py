@@ -14,6 +14,7 @@ import ui_methods
 
 
 define("port", default=8000, help="run on the given port", type=int)
+define("debug", default=True, help="debug mode", type=bool)
 
 
 if __name__ == "__main__":
@@ -29,7 +30,7 @@ if __name__ == "__main__":
     handlers.extend(admin_urls)
 
     # create tornado web app
-    app = web.Application(handlers=handlers, ui_methods=ui_methods, autoreload=True, **settings)
+    app = web.Application(handlers=handlers, ui_methods=ui_methods, autoreload=True, debug=options.debug, **settings)
     http_server = httpserver.HTTPServer(app)
     http_server.listen(options.port)
     ioloop.IOLoop.instance().start()

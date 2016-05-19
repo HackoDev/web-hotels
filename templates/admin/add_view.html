@@ -2,7 +2,7 @@
 
 {% block content %}
 {% if instance.id %}
-    <h4>Редактирование: "{{ unicode(instance) or "-" }}"</h4>
+    <h4>Редактирование: "{{ str(instance) or "-" }}"</h4>
 {% else %}
     <h4>Добавление: {{ opts["meta"].verbose_name }}</h4>
 {% end %}
@@ -13,6 +13,7 @@
       {% for field in form %}
           <div class="form-group">
             <div class="col-md-2">
+                <!-- <label for="{{ field.id }}">{{ field.label.text }}</label> -->
                 {% raw field.label %}
             </div>
             <div class="col-md-8">
