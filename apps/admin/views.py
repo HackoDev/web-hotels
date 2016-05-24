@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
 from apps.admin.forms import CountryAdminForm, CityAdminForm, HotelAdminForm, RoomAdminForm, RoomPriceAdminForm
 from sqlalchemy.orm import sessionmaker
 from tornado.web import RequestHandler
+import tornado.web
 
 from tables import BaseModel, UserProfile, Country, session, City, Hotel, Room, RoomPrice
 
@@ -52,6 +52,9 @@ class BaseAdminListView(RequestHandler):
     tab_active = None
     order_fields = ['-id']
 
+    def get_current_user(self):
+        return self.get_secure_cookie("user")
+
     @property
     def admin_add_url(self):
         raise NotImplementedError("No set add url")
@@ -85,6 +88,7 @@ class BaseAdminListView(RequestHandler):
     def title(self):
         return self.model_class.Meta.verbose_name_plural
 
+    @tornado.web.authenticated
     def get(self):
         extra_params = dict(
             opts={
@@ -103,6 +107,9 @@ class BaseAdminListView(RequestHandler):
 class BaseAdminAddChangeView(RequestHandler):
 
     tab_active = None
+
+    def get_current_user(self):
+        return self.get_secure_cookie("user")
 
     @property
     def model_class(self):
@@ -142,6 +149,7 @@ class BaseAdminAddChangeView(RequestHandler):
         for key, value in data.items():
             setattr(instance, key, value)
 
+    @tornado.web.authenticated
     def post(self, pk=None):
         form = self.form_class(self.request.arguments)
         if form.validate():
@@ -157,7 +165,9 @@ class BaseAdminAddChangeView(RequestHandler):
     def get_form_kwargs(self):
         return self.object.to_dict()
 
+    @tornado.web.authenticated
     def get(self, form=None, pk=None):
+        print(self.get_current_user())
         self.object = self.get_object(pk)
         extra_params = dict(
             opts={
@@ -349,6 +359,7 @@ class HotelDeleteView(BaseAdminDeleteView):
     model_class = Hotel
     success_url = 'admin:hotel-list'
     tab_active = 'hotel'
+
 
 class RoomPriceDeleteView(BaseAdminDeleteView):
     """ Admin room price delete view """

@@ -5,7 +5,7 @@ import json
 from tables import BaseModel, UserProfile, Country, City, Hotel, session
 
 
-class HotelListViewView(RequestHandler):
+class HotelSearchListView(RequestHandler):
 
     def json(self, data_dict):
         self.set_header("Content-Type", 'application/json')
@@ -34,6 +34,9 @@ class HotelListViewView(RequestHandler):
 
         self.json([item.to_dict() for item in query])
 
+
+class RoomSearchListView(RequestHandler):
+    pass
         # print(session.query(UserProfile).all())
         # if self.get_argument('create_user', False):
         #     user = UserProfile(first_name="Evgeniy", second_name="Hacko", middle_name="Gennadievich", email="hacko@nicecode.biz")
