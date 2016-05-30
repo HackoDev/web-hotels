@@ -23,19 +23,48 @@ class HotelSearchListView(BaseJSONMixin):
 
         query = session.query(Hotel).filter()
 
-        if country is not None:
+        if country is not None and country:
             query = query.join(City, City.id == Hotel.city_id).join(Country, Country.id == City.country_id).filter(Country.id == country)
 
-        if city is not None:
+        if city is not None and city:
             query = query.filter(Hotel.city_id == city)
 
-        if title is not None:
+        if title is not None and title:
             query = query.filter(Hotel.title.like("%" + title + "%"))
 
-        if position is not None:
+        if position is not None and position:
             query = query.filter(Hotel.position == position)
 
-        self.json([item.to_dict() for item in query])
+        hotels = []
+        for item in query:
+            data_dict = item.to_dict()
+            city = item.city()
+            data_dict.update({
+                "city": city.to_dict(),
+                "country": city.country().to_dict()
+            })
+            hotels.append(data_dict)
+        self.json(hotels)
+
+
+class HotelDetailsView(BaseJSONMixin):
+
+    def get(self, hotel_id):
+
+        try:
+            hotel = session.query(Hotel).filter(Hotel.id == int(hotel_id)).one()
+        except:
+            self.set_status(400)
+            self.json({"details": "Not found"})
+        data_dict = hotel.to_dict()
+        city = hotel.city()
+        data_dict.update({
+            "city": city.to_dict(),
+            "country": city.country().to_dict(),
+            "rooms": [room.to_dict() for room in hotel.get_rooms()]
+        })
+        self.json(data_dict)
+
 
 
 class RoomSearchListView(BaseJSONMixin):

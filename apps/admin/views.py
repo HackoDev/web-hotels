@@ -8,7 +8,7 @@ from settings import settings
 
 
 def is_staff_user(method):
-    """ Check permissions for current user """
+    """ Check permissions for current user. Only staff users """
 
     def wrapper(self, *args, **kwargs):
         user = int(self.get_current_user() or 0)

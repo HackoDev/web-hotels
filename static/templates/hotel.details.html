@@ -1,0 +1,32 @@
+<h3>Отель: "<span ng-bind="hotel.title"></span>"</h3>
+<hr/>
+<div class="col-md-12">
+  <b>Страна:</b> <i ng-bind="hotel.country.title"></i>
+</div>
+<br/>
+<br/>
+<div class="col-md-12">
+  <b>Город:</b> <i ng-bind="hotel.city.title"></i>
+</div>
+<br/>
+<br/>
+<div class="col-md-12">
+  <b>Описание:</b>
+  <div class="well" ng-bind="hotel.description"></div>
+</div>
+<hr/>
+<div class="col-md-12">
+  <div class="alert alert-info" ng-if="hotel.rooms.length == 0">
+    К сожалению отель не предоставил информацию по своим номерам
+  </div>
+  <div class="panel panel-info" ng-repeat="room in hotel.rooms">
+    <div class="panel-heading">
+      <span ng-bind="room.title"></span>
+    </div>
+    <div class="panel-body">
+      <p><b>Стоимость:</b> <span ng-bind="room.price"></span> руб.</p>
+      <p><b>Описание:</b> <p ng-bind="room.description"></p></p>
+      <p><span class="btn btn-success btn-sm pull-right">Забронировать</span></p>
+    </div>
+  </div>
+</div>

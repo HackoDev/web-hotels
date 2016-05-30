@@ -117,6 +117,7 @@ class Hotel(BaseModel):
     city_id = Column(Integer, ForeignKey(City.id), nullable=False, info={"verbose_name": "Город"})
     title = Column(String(512), default="", nullable=False, info={"verbose_name": "Название"})
     position = Column(Integer, default=3, nullable=False, info={"verbose_name": "Звездность"})
+    description = Column(String(), default="", nullable=False, info={"verbose_name": "Описание"})
 
     def city(self):
         return session.query(City).filter(City.id == self.city_id).one()
@@ -126,11 +127,17 @@ class Hotel(BaseModel):
     def __str__(self):
         return self.title
 
+    def get_rooms(self):
+        if self.id is None:
+            return []
+        return session.query(Room).filter(Room.hotel_id == self.id)
+
     def to_dict(self):
         return dict(
             id=self.id,
             title=self.title,
             position=self.position,
+            description=self.description
         )
 
     class Meta:
@@ -159,7 +166,9 @@ class Room(BaseModel):
         return dict(
             id=self.id,
             title=self.title,
-            hotel_id=self.hotel_id
+            hotel_id=self.hotel_id,
+            description=self.description,
+            price=self.price()
         )
 
     def price(self):

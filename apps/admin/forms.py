@@ -8,7 +8,7 @@ from apps.users import utils
 
 class CountryAdminForm(Form):
 
-    title = StringField(validators=[DataRequired()])#, label="Название".decode("utf-8"))
+    title = StringField(validators=[DataRequired()])
 
 
 class CityAdminForm(Form):
@@ -17,8 +17,8 @@ class CityAdminForm(Form):
         super(CityAdminForm, self).__init__(*args, **kwargs)
         self.country_id.choices = [(str(f.id), str(f)) for f in session.query(Country).all()]
 
-    title = StringField("Название", validators=[DataRequired()])#, label="Название".decode("utf-8"))
-    country_id = SelectField("Страна",validators=[DataRequired()])#label="Страна".decode("utf-8"))
+    title = StringField("Название", validators=[DataRequired()])
+    country_id = SelectField("Страна", validators=[DataRequired()])
 
 
 class HotelAdminForm(Form):
@@ -28,7 +28,8 @@ class HotelAdminForm(Form):
         self.city_id.choices = [(str(f.id), str(f)) for f in session.query(City).all()]
 
     city_id = SelectField("Город", validators=[DataRequired()])
-    title = StringField("Название" ,validators=[DataRequired()])#, label="Название".decode("utf-8"))
+    title = StringField("Название", validators=[DataRequired()])
+    description = StringField("Описание", validators=[DataRequired()], widget=widgets.TextArea())
     position = SelectField("Количество звезд", choices=POSITION_CHOICES, validators=[DataRequired()])#label="Звездность".decode("utf-8"))
 
 
