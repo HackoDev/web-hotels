@@ -15,6 +15,7 @@ class AuthForm(Form):
 
     def validate(self):
         success = super(AuthForm, self).validate()
+        # raise ValueError(self.password.data + " " + self.email.data)
         try:
             user = session.query(UserProfile).filter(UserProfile.email == self.email.data).one()
         except NoResultFound:

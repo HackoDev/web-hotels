@@ -1,8 +1,9 @@
-from wtforms.fields import IntegerField, StringField, SelectField, FloatField
+from wtforms.fields import IntegerField, StringField, SelectField, FloatField, PasswordField, BooleanField
 from wtforms import widgets
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Email
 from wtforms_tornado import Form
-from tables import Room, Country, session, POSITION_CHOICES, Hotel, City
+from tables import Room, Country, session, POSITION_CHOICES, Hotel, City, UserProfile
+from apps.users import utils
 
 
 class CountryAdminForm(Form):
@@ -50,3 +51,38 @@ class RoomPriceAdminForm(Form):
 
     value = FloatField("Цена", validators=[DataRequired()])
     room_id = SelectField("Номер", validators=[DataRequired()])
+
+
+class UserProfileForm(Form):
+
+    first_name = StringField("Имя", validators=[DataRequired()])
+    second_name = StringField("Фамилия", validators=[DataRequired()])
+    middle_name = StringField("Отчество", validators=[DataRequired()])
+    # auth info
+    email = StringField("Email", validators=[Email(), DataRequired()])
+    password1 = PasswordField("Пароль")
+    password2 = PasswordField("Повторите пароль")
+
+    is_staff = BooleanField("Статус персонала")
+
+    def validate(self):
+        success = super(UserProfileForm, self).validate()
+        if self.password1.data != self.password2.data:
+            success = False
+            errors = self.errors.get('password1', [])
+            errors.append("Пароли не совпадают")
+            self.errors.update("password1", errors)
+        return success
+
+    @property
+    def data(self):
+        """ Override base data for create hash password """
+        data = super(UserProfileForm, self).data
+        if self.password1.data and self.password2.data:
+            data.update({
+                "password": utils.make_password(self.password1.data)
+            })
+        data.pop("password1")
+        data.pop("password2")
+        # raise ValueError(data)
+        return data

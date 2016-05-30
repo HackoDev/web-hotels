@@ -1,6 +1,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relation, sessionmaker
 from sqlalchemy import *
+from apps.users import utils
 import settings
 import hashlib
 
@@ -21,31 +22,38 @@ class UserProfile(BaseModel):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
-    first_name = Column(String(255), default="")
-    second_name = Column(String(255), default="")
-    middle_name = Column(String(255), default="")
+    first_name = Column(String(255), default="", info={"verbose_name": "Имя"})
+    second_name = Column(String(255), default="", info={"verbose_name": "Фамилия"})
+    middle_name = Column(String(255), default="", info={"verbose_name": "Отчество"})
 
     # auth info
-    email = Column(String(255), nullable=False, unique=True)
-    password = Column(String(), nullable=False)
+    email = Column(String(255), nullable=False, unique=True, info={"verbose_name": "Email"})
+    password = Column(String(), nullable=False, info={"verbose_name": "Пароль"})
 
-    is_staff = Column(Boolean, default=False)
-
-    def make_password(self, password):
-        return hashlib.sha256(password).hexdigest()
+    is_staff = Column(Boolean, default=False, info={"verbose_name": "Администратор"})
 
     def set_password(self, password):
-        self.password = self.make_password(password)
+        self.password = utils.make_password(password)
 
-    def check_password(self, raw_passord):
-        return self.password == self.make_password(raw_passord)
+    def check_password(self, raw_password):
+        return self.password == utils.make_password(raw_password)
 
     def __repr__(self):
-        return "<User(first_name={first_name}, last_name={second_name}>".format(**dict(
+        return "<User(first_name={first_name}, second_name={second_name}>".format(**dict(
             first_name=self.first_name, second_name=self.second_name))
 
     def __str__(self):
         return "%s %s" % (self.first_name, self.middle_name)
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            first_name=self.first_name,
+            second_name=self.second_name,
+            middle_name=self.middle_name,
+            email=self.email,
+            is_staff=self.is_staff
+        )
 
     class Meta:
         verbose_name = "Пользователь"

@@ -1,9 +1,22 @@
-from apps.admin.forms import CountryAdminForm, CityAdminForm, HotelAdminForm, RoomAdminForm, RoomPriceAdminForm
+from apps.admin.forms import CountryAdminForm, CityAdminForm, HotelAdminForm, RoomAdminForm, RoomPriceAdminForm, UserProfileForm
 from sqlalchemy.orm import sessionmaker
 from tornado.web import RequestHandler
 import tornado.web
 
 from tables import BaseModel, UserProfile, Country, session, City, Hotel, Room, RoomPrice
+from settings import settings
+
+
+def is_staff_user(method):
+    """ Check permissions for current user """
+
+    def wrapper(self, *args, **kwargs):
+        user = int(self.get_current_user() or 0)
+        is_admin = session.query(UserProfile).filter(UserProfile.id == user, UserProfile.is_staff == True).count() == 1
+        if is_admin:
+            return method(self, *args, **kwargs)
+        return self.redirect(settings["login_url"] + "?next=" + self.request.uri)
+    return wrapper
 
 
 class Paginator(object):
@@ -89,6 +102,7 @@ class BaseAdminListView(RequestHandler):
         return self.model_class.Meta.verbose_name_plural
 
     @tornado.web.authenticated
+    @is_staff_user
     def get(self):
         extra_params = dict(
             opts={
@@ -150,6 +164,7 @@ class BaseAdminAddChangeView(RequestHandler):
             setattr(instance, key, value)
 
     @tornado.web.authenticated
+    @is_staff_user
     def post(self, pk=None):
         form = self.form_class(self.request.arguments)
         if form.validate():
@@ -166,6 +181,7 @@ class BaseAdminAddChangeView(RequestHandler):
         return self.object.to_dict()
 
     @tornado.web.authenticated
+    @is_staff_user
     def get(self, form=None, pk=None):
         print(self.get_current_user())
         self.object = self.get_object(pk)
@@ -232,6 +248,12 @@ class BaseAdminDeleteView(RequestHandler):
 
 
 class IndexView(RequestHandler):
+
+    def get_current_user(self):
+        return self.get_secure_cookie("user")
+
+    @tornado.web.authenticated
+    @is_staff_user
     def get(self):
         ctx = dict(
             title="Администрирование",
@@ -284,6 +306,15 @@ class RoomPriceAdminListView(BaseAdminListView):
     tab_active = 'room-price'
 
 
+
+class UserAdminListView(BaseAdminListView):
+    """ Admin user list view """
+
+    model_class = UserProfile
+    display_fields = ['id', 'first_name', 'second_name', 'middle_name', 'email', 'is_staff']
+    tab_active = 'user'
+
+
 class CountryAddChangeView(BaseAdminAddChangeView):
     """ Admin country add and change view """
 
@@ -329,6 +360,16 @@ class RoomPriceAddChangeView(BaseAdminAddChangeView):
     tab_active = 'room-price'
 
 
+
+class UserAddChangeView(BaseAdminAddChangeView):
+    """ Admin user add and change view """
+
+    model_class = UserProfile
+    form_class = UserProfileForm
+    success_url = "admin:user-list"
+    tab_active = 'user'
+
+
 class CityDeleteView(BaseAdminDeleteView):
     """ Admin city delete view """
 
@@ -369,14 +410,23 @@ class RoomPriceDeleteView(BaseAdminDeleteView):
     tab_active = 'room-price'
 
 
+
+class UserDeleteView(BaseAdminDeleteView):
+    """ Admin user delete view """
+
+    model_class = UserProfile
+    success_url = 'admin:user-list'
+    tab_active = 'user'
+
+
 # class CountryChangeView(BaseAdminChangeView):
 
 # class IndexHandler(BaseAdminView):
 
     # def get(self):
-    #     print(session.query(UserPofile).all())
+    #     print(session.query(UserProfile).all())
     #     if self.get_argument('create_user', False):
-    #         user = UserPofile(first_name="Evgeniy", second_name="Hacko", middle_name="Gennadievich", email="hacko@nicecode.biz")
+    #         user = UserProfile(first_name="Evgeniy", second_name="Hacko", middle_name="Gennadievich", email="hacko@nicecode.biz")
     #         user.set_password('password')
     #         session.add(user)
     #         try:

@@ -2,14 +2,17 @@ from sqlalchemy.orm import sessionmaker
 from tornado.web import RequestHandler
 import json
 
-from tables import BaseModel, UserProfile, Country, City, Hotel, session
+from tables import BaseModel, UserProfile, Country, City, Hotel, Room, session
 
 
-class HotelSearchListView(RequestHandler):
-
+class BaseJSONMixin(RequestHandler):
+    
     def json(self, data_dict):
         self.set_header("Content-Type", 'application/json')
         self.finish(json.dumps(data_dict))
+
+
+class HotelSearchListView(BaseJSONMixin):
 
     def get(self):
 
@@ -35,16 +38,12 @@ class HotelSearchListView(RequestHandler):
         self.json([item.to_dict() for item in query])
 
 
-class RoomSearchListView(RequestHandler):
-    pass
-        # print(session.query(UserProfile).all())
-        # if self.get_argument('create_user', False):
-        #     user = UserProfile(first_name="Evgeniy", second_name="Hacko", middle_name="Gennadievich", email="hacko@nicecode.biz")
-        #     user.set_password('password')
-        #     session.add(user)
-        #     try:
-        #         session.commit()
-        #     except Exception as e:
-        #         self.write("Exception: %s" % e.message)
-        #         session.rollback()
-        # self.write("Hotels index view")
+class RoomSearchListView(BaseJSONMixin):
+
+    def get(self):
+
+        query = session.query(Room).filter()
+        hotel = self.get_argument("hotel", None)
+        if hotel is not None:
+            query = query.filter(Room.hotel_id == int(hotel))
+        return self.json([item.to_dict() for item in query])

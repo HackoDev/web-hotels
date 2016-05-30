@@ -53,6 +53,7 @@
             <li role="presentation" class="{% if tab_active == 'hotel' %}active{% end %}"><a href="{{ reverse_url('admin:hotel-list') }}">Отели</a></li>
             <li role="presentation" class="{% if tab_active == 'room' %}active{% end %}"><a href="{{ reverse_url('admin:room-list') }}">Номера</a></li>
             <li role="presentation" class="{% if tab_active == 'room-price' %}active{% end %}"><a href="{{ reverse_url('admin:room-price-list') }}">Цены на номеров</a></li>
+            <li role="presentation" class="{% if tab_active == 'user' %}active{% end %}"><a href="{{ reverse_url('admin:user-list') }}">Пользователи</a></li>
           </ul>
         </div>
         <div class="col-md-10">

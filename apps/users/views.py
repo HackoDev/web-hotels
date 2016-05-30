@@ -1,5 +1,6 @@
 from tornado.web import RequestHandler
 from .forms import AuthForm
+from .utils import LoginRequiredMixin
 
 
 class IndexHandler(RequestHandler):
@@ -8,14 +9,14 @@ class IndexHandler(RequestHandler):
         self.write("Users inde view")
 
 
-class LoginHandler(RequestHandler):
+class LoginHandler(LoginRequiredMixin):
 
     def post(self):
         form = AuthForm(self.request.arguments)
         if form.validate():
-            self.set_secure_cookie("user", form.data)
+            self.clear_cookie("user")
+            self.set_secure_cookie("user", str(form.data.id))
             self.redirect(self.reverse_url("admin:index"))
-        raise ValueError(form.errors)
         self.get()
 
     def get(self):

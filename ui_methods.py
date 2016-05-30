@@ -1,6 +1,6 @@
 def get_asd_asd(data, model, field_name):
     field = getattr(model, field_name, None)
-    if isinstance(field.info, dict) and 'verbose_name' in field.info:
+    if hasattr(field, "info") and isinstance(field.info, dict) and 'verbose_name' in field.info:
         return field.info["verbose_name"]
     return field_name.capitalize()
 
