@@ -1,8 +1,9 @@
 from sqlalchemy.orm import sessionmaker
 from tornado.web import RequestHandler
+import datetime
 import json
 
-from tables import BaseModel, UserProfile, Country, City, Hotel, Room, session
+from tables import BaseModel, UserProfile, Country, City, Hotel, Room, Reservation, session
 
 
 class BaseJSONMixin(RequestHandler):
@@ -65,6 +66,30 @@ class HotelDetailsView(BaseJSONMixin):
         })
         self.json(data_dict)
 
+
+class ReservationSetView(BaseJSONMixin):
+
+    def post(self, room_id):
+        start_date = self.get_argument("start_date", None)
+        end_date = self.get_argument("end_date", None)
+        try:
+            room = session.query(Room).filter(Room.id == int(room_id)).one()
+        except:
+            self.set_status(404)
+            self.finish("not found")
+        try:
+            start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
+            end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+        except:
+            self.set_status(400)
+            self.finish({"details": "Некорректная дата"})
+
+        s_date, e_date = room.is_busy()
+
+        if s_date is e_date is None:
+            self.set_status(400)
+            self.json({"details": "Номер занят"})
+        self.json({"details": "Квартира свободна"})
 
 
 class RoomSearchListView(BaseJSONMixin):

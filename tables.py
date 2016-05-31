@@ -136,7 +136,7 @@ class Hotel(BaseModel):
         return dict(
             id=self.id,
             title=self.title,
-            position=self.position,
+            position=list(range(self.position)),
             description=self.description
         )
 
@@ -170,6 +170,17 @@ class Room(BaseModel):
             description=self.description,
             price=self.price()
         )
+
+    def is_busy(self, start_date, end_date):
+        query = session.query(Reservation).filter(Room.id == self.id)
+        query1 = query.filter(Reservation.start_date_time >= start_date, Reservation.end_date_time <= start_date)
+        query2 = query.filter(Reservation.start_date_time >= end_date, Reservation.end_date_time <= end_date)
+        return None, None
+        # if query1.count() == query2.count() == 0:
+            # return None, None
+        # if query2.count() == 1:
+        #     result = results.one()
+        #     return results.start_date_time, results.end_date_time
 
     def price(self):
         result = session.query(RoomPrice).filter(RoomPrice.room_id == self.id).order_by(RoomPrice.id.desc()).first()
@@ -220,6 +231,27 @@ class RoomPrice(BaseModel):
     class Meta:
         verbose_name = "Цена номера"
         verbose_name_plural = "Цены номеров"
+
+
+class Reservation(BaseModel):
+
+    __tablename__ = "reservations"
+
+    id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
+    room_id = Column(Integer, ForeignKey(Room.id), nullable=False, info={"verbose_name": "Номер"})
+    price = Column(Float, default=0, nullable=False, info={"verbose_name": "Цена"})
+    start_date_time = Column(DateTime, nullable=False, info={"verbose_name": "Дата заезда"})
+    end_date_time = Column(DateTime, nullable=False, info={"verbose_name": "Дата выезда"})
+
+    def __str__(self):
+        return "{0}- {1} руб.".format(self.room(), self.price)
+
+    def room(self):
+        if self.room_id is not None:
+            return session.query(Room).filter(Room.id == self.room_id).one()
+        return None
+
+    room.info = {"verbose_name": "Номер"}
 
 
 BaseModel.metadata.create_all(engine)

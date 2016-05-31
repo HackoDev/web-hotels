@@ -26,7 +26,7 @@
     <div class="panel-body">
       <p><b>Стоимость:</b> <span ng-bind="room.price"></span> руб.</p>
       <p><b>Описание:</b> <p ng-bind="room.description"></p></p>
-      <p><span class="btn btn-success btn-sm pull-right">Забронировать</span></p>
+      <p><span class="btn btn-success btn-sm pull-right" ng-click="openReservationDialog(room)">Забронировать</span></p>
     </div>
   </div>
 </div>

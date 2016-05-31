@@ -7,27 +7,7 @@
     <div class="panel panel-warning">
       <div class="panel-heading">
         <span ng-bind="hotel.title"></span>
-        <span ng-switch="hotel.position" class="pull-right">
-          <span ng-switch-when="3">
-            <span class="glyphicon glyphicon-star"></span>
-            <span class="glyphicon glyphicon-star"></span>
-            <span class="glyphicon glyphicon-star"></span>
-          </span>
-          <span ng-switch-when="4">
-            <span class="glyphicon glyphicon-star"></span>
-            <span class="glyphicon glyphicon-star"></span>
-            <span class="glyphicon glyphicon-star"></span>
-            <span class="glyphicon glyphicon-star"></span>
-          </span>
-          <span ng-switch-when="5">
-            <span class="glyphicon glyphicon-star"></span>
-            <span class="glyphicon glyphicon-star"></span>
-            <span class="glyphicon glyphicon-star"></span>
-            <span class="glyphicon glyphicon-star"></span>
-            <span class="glyphicon glyphicon-star"></span>
-          </span>
-        </span>
-
+        <span class="glyphicon glyphicon-star pull-right" ng-repeat="i in hotel.position"></span>
       </div>
       <div class="panel-body">
         <div class="col-md-4">
