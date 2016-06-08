@@ -136,7 +136,7 @@ class Hotel(BaseModel):
         return dict(
             id=self.id,
             title=self.title,
-            position=list(range(self.position)),
+            position=list(range(self.position or 0)),
             description=self.description
         )
 
@@ -243,9 +243,28 @@ class Reservation(BaseModel):
     start_date_time = Column(DateTime, nullable=False, info={"verbose_name": "Дата заезда"})
     end_date_time = Column(DateTime, nullable=False, info={"verbose_name": "Дата выезда"})
 
+    first_name = Column(String(255), default="", info={"verbose_name": "Имя"})
+    last_name = Column(String(255), default="", info={"verbose_name": "Фамилия"})
+    middle_name = Column(String(255), default="", info={"verbose_name": "Отчество"})
+
+    class Meta:
+        verbose_name = "Бронирование"
+        verbose_name_plural = "Бронирование"
+
     def __str__(self):
         return "{0}- {1} руб.".format(self.room(), self.price)
 
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            room_id=self.room_id,
+            price=self.price,
+            start_date_time=self.start_date_time,
+            end_date_time=self.end_date_time,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            middle_name=self.middle_name
+        )
     def room(self):
         if self.room_id is not None:
             return session.query(Room).filter(Room.id == self.room_id).one()

@@ -54,6 +54,8 @@
             <li role="presentation" class="{% if tab_active == 'room' %}active{% end %}"><a href="{{ reverse_url('admin:room-list') }}">Номера</a></li>
             <li role="presentation" class="{% if tab_active == 'room-price' %}active{% end %}"><a href="{{ reverse_url('admin:room-price-list') }}">Цены на номеров</a></li>
             <li role="presentation" class="{% if tab_active == 'user' %}active{% end %}"><a href="{{ reverse_url('admin:user-list') }}">Пользователи</a></li>
+            <li role="presentation" class="{% if tab_active == 'reservation' %}active{% end %}"><a href="{{ reverse_url('admin:reservation-list') }}">Бронирование</a></li>
+
           </ul>
         </div>
         <div class="col-md-10">

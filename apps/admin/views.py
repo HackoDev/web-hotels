@@ -1,9 +1,9 @@
-from apps.admin.forms import CountryAdminForm, CityAdminForm, HotelAdminForm, RoomAdminForm, RoomPriceAdminForm, UserProfileForm
+from apps.admin.forms import CountryAdminForm, CityAdminForm, HotelAdminForm, RoomAdminForm, RoomPriceAdminForm, UserProfileForm, ReservationForm
 from sqlalchemy.orm import sessionmaker
 from tornado.web import RequestHandler
 import tornado.web
 
-from tables import BaseModel, UserProfile, Country, session, City, Hotel, Room, RoomPrice
+from tables import BaseModel, UserProfile, Country, session, City, Hotel, Room, RoomPrice, Reservation
 from settings import settings
 
 
@@ -315,6 +315,15 @@ class UserAdminListView(BaseAdminListView):
     tab_active = 'user'
 
 
+
+class ReservationAdminListView(BaseAdminListView):
+    """ Admin user list view """
+
+    model_class = Reservation
+    display_fields = ['id', 'first_name', 'last_name', 'middle_name', 'start_date_time', 'end_date_time']
+    tab_active = 'reservation'
+
+
 class CountryAddChangeView(BaseAdminAddChangeView):
     """ Admin country add and change view """
 
@@ -370,6 +379,16 @@ class UserAddChangeView(BaseAdminAddChangeView):
     tab_active = 'user'
 
 
+
+class ReservationAddChangeView(BaseAdminAddChangeView):
+    """ Admin user add and change view """
+
+    model_class = Reservation
+    form_class = ReservationForm
+    success_url = "admin:reservation-list"
+    tab_active = 'reservation'
+
+
 class CityDeleteView(BaseAdminDeleteView):
     """ Admin city delete view """
 
@@ -419,19 +438,9 @@ class UserDeleteView(BaseAdminDeleteView):
     tab_active = 'user'
 
 
-# class CountryChangeView(BaseAdminChangeView):
+class ReservationDeleteView(BaseAdminDeleteView):
+    """ Admin user delete view """
 
-# class IndexHandler(BaseAdminView):
-
-    # def get(self):
-    #     print(session.query(UserProfile).all())
-    #     if self.get_argument('create_user', False):
-    #         user = UserProfile(first_name="Evgeniy", second_name="Hacko", middle_name="Gennadievich", email="hacko@nicecode.biz")
-    #         user.set_password('password')
-    #         session.add(user)
-    #         try:
-    #             session.commit()
-    #         except Exception, e:
-    #             self.write("Exception: %s" % e.message)
-    #             session.rollback()
-    #     self.write("Hotels index view")
+    model_class = Reservation
+    success_url = 'admin:reservation-list'
+    tab_active = 'reservation'

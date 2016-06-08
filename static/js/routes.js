@@ -12,12 +12,18 @@ app
                 templateUrl: templateURL
             })
             .state('hotels', {
-                url: "/hotels/?:page&:title&city&country",
+                url: "/hotels/?:{page: int}&:title&:{city: int}&{position: int}&{country: int}&{min_price: int}&{max_price: int}",
                 templateUrl: templateURL + "hotels.html",
                 controller: 'hotelsCtrl',
                 resolve: {
                     hotels: function ($stateParams, apiFactory) {
                         return apiFactory.loadHotels($stateParams);
+                    },
+                    countries: function (apiFactory) {
+                        return apiFactory.loadCountries();
+                    },
+                    cities: function (apiFactory) {
+                        return apiFactory.loadCities();
                     }
                 }
             })
@@ -33,11 +39,11 @@ app
             })
             .state('room', {
                 url: "/room/{id: int}/",
-                template: "Номер"
+                templateUrl: templateURL + "cabinet.stats.html"
             })
             .state('cabinet', {
                 url: "/cabinet",
-                template: "Личный кабинет",
+                templateUrl: templateURL + "cabinet.stats.html",
                 controller: function ($scope) {
                     $scope.things = ["A", "Set", "Of", "Things"];
                 }

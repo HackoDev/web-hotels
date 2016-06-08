@@ -1,4 +1,4 @@
-from wtforms.fields import IntegerField, StringField, SelectField, FloatField, PasswordField, BooleanField
+from wtforms.fields import IntegerField, StringField, SelectField, FloatField, PasswordField, BooleanField, DateField
 from wtforms import widgets
 from wtforms.validators import DataRequired, Email
 from wtforms_tornado import Form
@@ -87,3 +87,18 @@ class UserProfileForm(Form):
         data.pop("password2")
         # raise ValueError(data)
         return data
+
+
+class ReservationForm(Form):
+
+    first_name = StringField("Имя", validators=[DataRequired()])
+    last_name = StringField("Фамилия", validators=[DataRequired()])
+    middle_name = StringField("Отчество", validators=[DataRequired()])
+    start_date_time = DateField("Дата заселения", validators=[DataRequired()])
+    end_date_time = DateField("Дата выеда", validators=[DataRequired()])
+    room_id =  SelectField("Номер", validators=[DataRequired()])
+    price = FloatField("По цене", validators=[DataRequired()])
+
+    def __init__(self, *args, **kwargs):
+        super(ReservationForm, self).__init__(*args, **kwargs)
+        self.room_id.choices = [(str(f.id), ": ".join([str(f.hotel()), str(f)])) for f in session.query(Room).all()]

@@ -1,10 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
+<div style="padding: 30px;background-color: #fff;" class="container-fluid">
+    <div class="text-center">
+      <h3>Бронирование номера</h3>
+    </div>
+  <div>
+    <form class="form-horizontal">
 
-</body>
-</html>
+      <div class="form-group">
+        <label>Фамилия:</label>
+        <input type="text" class="form-control input-sm" ng-model="last_name"/>
+      </div>
+
+      <div class="form-group">
+        <label>Имя:</label>
+        <input type="text" class="form-control input-sm" ng-model="first_name"/>
+      </div>
+
+      <div class="form-group">
+        <label>Отчество:</label>
+        <input type="text" class="form-control input-sm" ng-model="middle_name"/>
+      </div>
+
+      <div class="form-group text-right">
+        <span class="btn btn-success" ng-click="setReservation()">Сохранить</span>
+      </div>
+
+    </form>
+  </div>
+</div>

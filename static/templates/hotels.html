@@ -1,8 +1,52 @@
 <div>
   <h3>Отели</h3>
+  <div class="col-md-12">
+    <div class="well">
+      <h3>Поиск отелей:</h3>
+
+      <div class="form-group">
+          <label for="id_countries">Страна</label>
+          <select id="id_countries" ng-model="searchParams.country" ng-options="country.id as country.title for country in countries" class="form-control input-sm">
+          </select>
+      </div>
+
+      <div class="form-group">
+          <label for="id_cities">Города</label>
+          <select id="id_cities" ng-model="searchParams.city" ng-options="city.id as city.title for city in cities | filter: {country_id: searchParams.country}" class="form-control input-sm">
+          </select>
+      </div>
+
+      <div class="form-group">
+          <label for="id_title">Название отеля:</label>
+          <input id="id_title" type="text" ng-model="searchParams.title" class="form-control input-sm"/>
+      </div>
+
+      <div class="form-group">
+        <label>Диапазоны цен:</label>
+        <div>
+          От: <input id="id_min" type="text" ng-model="searchParams.min_price" class="form-control input-sm" placeholder="Без ограничений" style="width: 300px; display: inline-block;"/>
+
+          <span style="display: inline-block; width: 100px;"></span>До: <input id="id_max" type="text" ng-model="searchParams.max_price" class="form-control input-sm" placeholder="Без ограничений" style="width: 300px; display: inline-block;"/>
+        </div>
+      </div>
+
+      <h3>Поиск отелей:</h3>
+      <div class="form-group">
+          <label for="id_points">Количество звезд:</label>
+          <select id="id_points" ng-model="searchParams.position" ng-options="position as position for position in positions" class="form-control input-sm">
+          </select>
+      </div>
+
+      <div class="form-group text-right">
+        <span class="btn btn-success" ng-click="search()">Найти</span>
+      </div>
+    </div>
+  </div>
+
   <div class="col-md-12" ng-if="hotels.length == 0">
     <div class="alert alert-info">Список пуст</div>
   </div>
+
   <div class="col-md-12" ng-repeat="hotel in hotels">
     <div class="panel panel-warning">
       <div class="panel-heading">
