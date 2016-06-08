@@ -5,7 +5,14 @@ BASE_DIR = os.path.dirname(__file__)
 
 root = lambda *x: os.path.join(BASE_DIR, *x)
 
-DB_PATH = root("db.sqlite")
+DB_SETTINGS = {
+	"USER": "root",
+	"PASSWORD": "pass",
+	"NAME": "booking_db",
+	"HOST": "localhost",
+	"PORT": "3306"
+}
+DB_PATH = "booking_db"
 
 settings = dict(
     template_path=root("templates"),

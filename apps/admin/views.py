@@ -50,7 +50,7 @@ class Paginator(object):
         return dict(
             objects_list=self.query_set.slice(self.start_position, self.end_position),
             page=self.page,
-            max_page=self.max_page,
+            max_page=int(self.max_page or 0),
             next_page=self.next_page,
             prev_page=self.prev_page
         )

@@ -5,7 +5,7 @@ from apps.users import utils
 import settings
 import hashlib
 
-engine = create_engine('sqlite:///' + settings.DB_PATH)
+engine = create_engine('mysql://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}'.format(**settings.DB_SETTINGS))
 BaseModel = declarative_base()
 BaseModel.metadata.bind = engine
 
@@ -28,7 +28,7 @@ class UserProfile(BaseModel):
 
     # auth info
     email = Column(String(255), nullable=False, unique=True, info={"verbose_name": "Email"})
-    password = Column(String(), nullable=False, info={"verbose_name": "Пароль"})
+    password = Column(String(1024), nullable=False, info={"verbose_name": "Пароль"})
 
     is_staff = Column(Boolean, default=False, info={"verbose_name": "Администратор"})
 
@@ -117,7 +117,7 @@ class Hotel(BaseModel):
     city_id = Column(Integer, ForeignKey(City.id), nullable=False, info={"verbose_name": "Город"})
     title = Column(String(512), default="", nullable=False, info={"verbose_name": "Название"})
     position = Column(Integer, default=3, nullable=False, info={"verbose_name": "Звездность"})
-    description = Column(String(), default="", nullable=False, info={"verbose_name": "Описание"})
+    description = Column(String(1024), default="", nullable=False, info={"verbose_name": "Описание"})
 
     def city(self):
         return session.query(City).filter(City.id == self.city_id).one()
@@ -183,7 +183,8 @@ class Room(BaseModel):
         #     return results.start_date_time, results.end_date_time
 
     def price(self):
-        result = session.query(RoomPrice).filter(RoomPrice.room_id == self.id).order_by(RoomPrice.id.desc()).first()
+        result = session.query(RoomPrice).filter(RoomPrice.room_id == self.id).order_by(RoomPrice.id.desc())\
+            .limit(1).first()
         if result:
             return result.value
         return 0

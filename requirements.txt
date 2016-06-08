@@ -3,3 +3,5 @@ sqlalchemy
 sqlalchemy-migrate
 wtforms
 wtforms-tornado
+mysqlclient
+

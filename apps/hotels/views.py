@@ -30,7 +30,8 @@ class HotelSearchListView(BaseJSONMixin):
         query = session.query(Hotel).filter()
 
         if country is not None and country > 0:
-            query = query.join(City, City.id == Hotel.city_id).join(Country, Country.id == City.country_id).filter(Country.id == country)
+            query = query.join(City, City.id == Hotel.city_id).join(Country, Country.id == City.country_id)\
+                .filter(Country.id == country)
 
         if city is not None and city:
             query = query.filter(Hotel.city_id == city)
@@ -45,7 +46,7 @@ class HotelSearchListView(BaseJSONMixin):
             query = query.join(Room, Room.hotel_id == Hotel.id).join(RoomPrice, RoomPrice.room_id == Room.id)\
                 .filter(RoomPrice.value >= min_price)
 
-        if max_price and max_price > min_price and max_price > 0:
+        if max_price and max_price > (min_price or 0) and max_price > 0:
             query = query.join(Room, Room.hotel_id == Hotel.id).join(RoomPrice, RoomPrice.room_id == Room.id)\
                 .filter(RoomPrice.value <= max_price)
 
